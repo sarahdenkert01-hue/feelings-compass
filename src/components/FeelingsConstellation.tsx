@@ -212,7 +212,7 @@ export default function FeelingsConstellation() {
       p.subs.forEach((s, i) => {
         const t = n === 1 ? 0 : i / (n - 1) - 0.5;
         const a = baseAngle + t * radii.spread;
-        const { x, y } = polar(base.x, base.y, radii.sub, a);
+        const { x, y } = polar(base.x, base.y, radii.subX, radii.subY, a);
         map[s.id] = { x, y };
       });
     });
