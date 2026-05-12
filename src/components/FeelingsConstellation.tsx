@@ -164,32 +164,56 @@ function polar(
 // or overlap the page title above the constellation.
 function getRadii(width: number) {
   if (width < 480)
-    return { primaryX: 32, primaryY: 24, subX: 30, subY: 22, spread: 90 };
+    return { primaryX: 28, primaryY: 23, subOutward: 14, subTangent: 72, subArc: 4 };
   if (width < 768)
-    return { primaryX: 34, primaryY: 26, subX: 28, subY: 20, spread: 100 };
+    return { primaryX: 30, primaryY: 24, subOutward: 15, subTangent: 82, subArc: 4 };
   if (width < 1100)
-    return { primaryX: 36, primaryY: 28, subX: 26, subY: 18, spread: 110 };
-  return { primaryX: 38, primaryY: 30, subX: 24, subY: 16, spread: 120 };
+    return { primaryX: 34, primaryY: 27, subOutward: 15, subTangent: 82, subArc: 4 };
+  return { primaryX: 38, primaryY: 30, subOutward: 14, subTangent: 78, subArc: 3 };
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getNodeBox(width: number, height: number, kind: "center" | "primary" | "sub") {
+  const sizes =
+    width < 640
+      ? { center: [200, 78], primary: [146, 56], sub: [112, 36] }
+      : { center: [230, 82], primary: [170, 60], sub: [126, 38] };
+  const [w, h] = sizes[kind];
+  return { w: (w / width) * 100 + 1.5, h: (h / height) * 100 + 1.5 };
+}
+
+function boxesOverlap(
+  a: { x: number; y: number; box: { w: number; h: number } },
+  b: { x: number; y: number; box: { w: number; h: number } },
+) {
+  const overlapX = (a.box.w + b.box.w) / 2 - Math.abs(a.x - b.x);
+  const overlapY = (a.box.h + b.box.h) / 2 - Math.abs(a.y - b.y);
+  return { overlapX, overlapY, touching: overlapX > 0 && overlapY > 0 };
 }
 
 export default function FeelingsConstellation() {
   const [activePrimary, setActivePrimary] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ kind: "center" | "primary" | "sub"; id: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(1200);
+  const [containerSize, setContainerSize] = useState({ width: 1200, height: 675 });
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
-      for (const e of entries) setContainerWidth(e.contentRect.width);
+      for (const e of entries) {
+        setContainerSize({ width: e.contentRect.width, height: e.contentRect.height });
+      }
     });
     ro.observe(el);
-    setContainerWidth(el.clientWidth);
+    setContainerSize({ width: el.clientWidth, height: el.clientHeight });
     return () => ro.disconnect();
   }, []);
 
-  const radii = useMemo(() => getRadii(containerWidth), [containerWidth]);
+  const radii = useMemo(() => getRadii(containerSize.width), [containerSize.width]);
 
   // Positions for primaries
   const primaryPositions = useMemo(() => {
