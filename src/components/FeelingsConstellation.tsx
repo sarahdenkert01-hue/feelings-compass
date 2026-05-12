@@ -154,10 +154,10 @@ function polar(cx: number, cy: number, r: number, angleDeg: number) {
 // Responsive radii (% of container). Smaller screens push sub-nodes
 // further out and pull primaries slightly in to avoid overlap.
 function getRadii(width: number) {
-  if (width < 480) return { primary: 30, sub: 38, spread: 50 };
-  if (width < 768) return { primary: 32, sub: 34, spread: 55 };
-  if (width < 1100) return { primary: 34, sub: 28, spread: 62 };
-  return { primary: 36, sub: 24, spread: 70 };
+  if (width < 480) return { primary: 28, sub: 42, spread: 90 };
+  if (width < 768) return { primary: 30, sub: 38, spread: 100 };
+  if (width < 1100) return { primary: 32, sub: 32, spread: 110 };
+  return { primary: 34, sub: 28, spread: 120 };
 }
 
 export default function FeelingsConstellation() {
