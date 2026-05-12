@@ -475,25 +475,26 @@ function NodeButton({
       : "nd-node-secondary px-3.5 py-2 min-w-[96px]";
 
   return (
-    <button
-      onClick={onClick}
-      className={[
-        "absolute rounded-full text-center",
-        "transition-all duration-500 ease-out",
-        sizeClass,
-        active ? "nd-glow scale-[1.03]" : "",
-        dim ? "opacity-40" : "opacity-100",
-        floating ? (size === "center" ? "nd-pulse-slow" : "nd-pulse") : "nd-fade-in",
-        "hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-      ].join(" ")}
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        animationDelay: `${(floating ? floatDelay : delay)}s`,
-      }}
+    <div
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+      style={{ left: `${x}%`, top: `${y}%` }}
     >
-      {children}
-    </button>
+      <button
+        onClick={onClick}
+        className={[
+          "rounded-full text-center",
+          "transition-all duration-500 ease-out",
+          sizeClass,
+          active ? "nd-glow scale-[1.03]" : "",
+          dim ? "opacity-40" : "opacity-100",
+          floating ? (size === "center" ? "nd-pulse-slow" : "nd-pulse") : "nd-fade-in",
+          "hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        ].join(" ")}
+        style={{ animationDelay: `${floating ? floatDelay : delay}s` }}
+      >
+        {children}
+      </button>
+    </div>
   );
 }
 
