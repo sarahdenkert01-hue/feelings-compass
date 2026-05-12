@@ -164,32 +164,56 @@ function polar(
 // or overlap the page title above the constellation.
 function getRadii(width: number) {
   if (width < 480)
-    return { primaryX: 32, primaryY: 24, subX: 30, subY: 22, spread: 90 };
+    return { primaryX: 27, primaryY: 22, subOutward: 142, subTangent: 78, subArc: 34 };
   if (width < 768)
-    return { primaryX: 34, primaryY: 26, subX: 28, subY: 20, spread: 100 };
+    return { primaryX: 29, primaryY: 23, subOutward: 148, subTangent: 108, subArc: 26 };
   if (width < 1100)
-    return { primaryX: 36, primaryY: 28, subX: 26, subY: 18, spread: 110 };
-  return { primaryX: 38, primaryY: 30, subX: 24, subY: 16, spread: 120 };
+    return { primaryX: 32, primaryY: 25, subOutward: 148, subTangent: 136, subArc: 14 };
+  return { primaryX: 36, primaryY: 28, subOutward: 150, subTangent: 148, subArc: 10 };
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function getNodeBox(width: number, height: number, kind: "center" | "primary" | "sub") {
+  const sizes =
+    width < 640
+      ? { center: [200, 78], primary: [146, 56], sub: [112, 36] }
+      : { center: [230, 82], primary: [170, 60], sub: [126, 38] };
+  const [w, h] = sizes[kind];
+  return { w: (w / width) * 100 + 1.5, h: (h / height) * 100 + 1.5 };
+}
+
+function boxesOverlap(
+  a: { x: number; y: number; box: { w: number; h: number } },
+  b: { x: number; y: number; box: { w: number; h: number } },
+) {
+  const overlapX = (a.box.w + b.box.w) / 2 - Math.abs(a.x - b.x);
+  const overlapY = (a.box.h + b.box.h) / 2 - Math.abs(a.y - b.y);
+  return { overlapX, overlapY, touching: overlapX > 0 && overlapY > 0 };
 }
 
 export default function FeelingsConstellation() {
   const [activePrimary, setActivePrimary] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ kind: "center" | "primary" | "sub"; id: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState<number>(1200);
+  const [containerSize, setContainerSize] = useState({ width: 1200, height: 675 });
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver((entries) => {
-      for (const e of entries) setContainerWidth(e.contentRect.width);
+      for (const e of entries) {
+        setContainerSize({ width: e.contentRect.width, height: e.contentRect.height });
+      }
     });
     ro.observe(el);
-    setContainerWidth(el.clientWidth);
+    setContainerSize({ width: el.clientWidth, height: el.clientHeight });
     return () => ro.disconnect();
   }, []);
 
-  const radii = useMemo(() => getRadii(containerWidth), [containerWidth]);
+  const radii = useMemo(() => getRadii(containerSize.width), [containerSize.width]);
 
   // Positions for primaries
   const primaryPositions = useMemo(() => {
@@ -205,19 +229,59 @@ export default function FeelingsConstellation() {
 
   const subPositions = useMemo(() => {
     const map: Record<string, { x: number; y: number }> = {};
+    const primaryBox = getNodeBox(containerSize.width, containerSize.height, "primary");
+    const centerBox = getNodeBox(containerSize.width, containerSize.height, "center");
+    const subBox = getNodeBox(containerSize.width, containerSize.height, "sub");
+    const baseObstacles = [
+      { x: 50, y: 50, box: centerBox },
+      ...PRIMARIES.map((p) => ({ ...primaryPositions[p.id], box: primaryBox })),
+    ];
+    const safe = {
+      left: subBox.w / 2 + 1,
+      right: 100 - subBox.w / 2 - 1,
+      top: subBox.h / 2 + 2,
+      bottom: 100 - subBox.h / 2 - 2,
+    };
+
     PRIMARIES.forEach((p) => {
       const base = primaryPositions[p.id];
       const n = p.subs.length;
-      const baseAngle = base.angle;
+      const outwardX = ((base.x - 50) / 100) * containerSize.width;
+      const outwardY = ((base.y - 50) / 100) * containerSize.height;
+      const length = Math.hypot(outwardX, outwardY) || 1;
+      const ux = outwardX / length;
+      const uy = outwardY / length;
+      const tx = -uy;
+      const ty = ux;
+      const placed: { x: number; y: number; box: { w: number; h: number } }[] = [];
+
       p.subs.forEach((s, i) => {
-        const t = n === 1 ? 0 : i / (n - 1) - 0.5;
-        const a = baseAngle + t * radii.spread;
-        const { x, y } = polar(base.x, base.y, radii.subX, radii.subY, a);
-        map[s.id] = { x, y };
+        const t = i - (n - 1) / 2;
+        const direction = t === 0 ? 1 : Math.sign(t);
+        const outwardPx = radii.subOutward - Math.abs(t) * radii.subArc;
+        const tangentPx = t * radii.subTangent;
+        let node = {
+          x: clamp(base.x + ((ux * outwardPx + tx * tangentPx) / containerSize.width) * 100, safe.left, safe.right),
+          y: clamp(base.y + ((uy * outwardPx + ty * tangentPx) / containerSize.height) * 100, safe.top, safe.bottom),
+          box: subBox,
+        };
+
+        for (let attempt = 0; attempt < 7; attempt += 1) {
+          const collision = [...baseObstacles, ...placed].find((other) => boxesOverlap(node, other).touching);
+          if (!collision) break;
+          node = {
+            ...node,
+            x: clamp(node.x + ((ux * 16 + tx * 20 * direction) / containerSize.width) * 100, safe.left, safe.right),
+            y: clamp(node.y + ((uy * 16 + ty * 20 * direction) / containerSize.height) * 100, safe.top, safe.bottom),
+          };
+        }
+
+        placed.push(node);
+        map[s.id] = { x: node.x, y: node.y };
       });
     });
     return map;
-  }, [primaryPositions, radii]);
+  }, [containerSize, primaryPositions, radii]);
 
   const detailContent = useMemo(() => {
     if (!selected) return null;
@@ -411,25 +475,26 @@ function NodeButton({
       : "nd-node-secondary px-3.5 py-2 min-w-[96px]";
 
   return (
-    <button
-      onClick={onClick}
-      className={[
-        "absolute -translate-x-1/2 -translate-y-1/2 rounded-full text-center",
-        "transition-all duration-500 ease-out",
-        sizeClass,
-        active ? "nd-glow scale-[1.03]" : "",
-        dim ? "opacity-40" : "opacity-100",
-        floating ? (size === "center" ? "nd-pulse-slow" : "nd-pulse") : "nd-fade-in",
-        "hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
-      ].join(" ")}
-      style={{
-        left: `${x}%`,
-        top: `${y}%`,
-        animationDelay: `${(floating ? floatDelay : delay)}s`,
-      }}
+    <div
+      className="absolute -translate-x-1/2 -translate-y-1/2"
+      style={{ left: `${x}%`, top: `${y}%` }}
     >
-      {children}
-    </button>
+      <button
+        onClick={onClick}
+        className={[
+          "rounded-full text-center",
+          "transition-all duration-500 ease-out",
+          sizeClass,
+          active ? "nd-glow scale-[1.03]" : "",
+          dim ? "opacity-40" : "opacity-100",
+          floating ? (size === "center" ? "nd-pulse-slow" : "nd-pulse") : "nd-fade-in",
+          "hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        ].join(" ")}
+        style={{ animationDelay: `${floating ? floatDelay : delay}s` }}
+      >
+        {children}
+      </button>
+    </div>
   );
 }
 
