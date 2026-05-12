@@ -478,7 +478,7 @@ function NodeButton({
     <button
       onClick={onClick}
       className={[
-        "absolute -translate-x-1/2 -translate-y-1/2 rounded-full text-center",
+        "absolute rounded-full text-center",
         "transition-all duration-500 ease-out",
         sizeClass,
         active ? "nd-glow scale-[1.03]" : "",
