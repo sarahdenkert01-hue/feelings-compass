@@ -164,12 +164,12 @@ function polar(
 // or overlap the page title above the constellation.
 function getRadii(width: number) {
   if (width < 480)
-    return { primaryX: 28, primaryY: 23, subOutward: 14, subTangent: 72, subArc: 4 };
+    return { primaryX: 27, primaryY: 22, subOutward: 142, subTangent: 78, subArc: 34 };
   if (width < 768)
-    return { primaryX: 30, primaryY: 24, subOutward: 15, subTangent: 82, subArc: 4 };
+    return { primaryX: 29, primaryY: 23, subOutward: 148, subTangent: 108, subArc: 26 };
   if (width < 1100)
-    return { primaryX: 34, primaryY: 27, subOutward: 15, subTangent: 82, subArc: 4 };
-  return { primaryX: 38, primaryY: 30, subOutward: 14, subTangent: 78, subArc: 3 };
+    return { primaryX: 32, primaryY: 25, subOutward: 148, subTangent: 136, subArc: 14 };
+  return { primaryX: 36, primaryY: 28, subOutward: 150, subTangent: 148, subArc: 10 };
 }
 
 function clamp(value: number, min: number, max: number) {
@@ -229,19 +229,59 @@ export default function FeelingsConstellation() {
 
   const subPositions = useMemo(() => {
     const map: Record<string, { x: number; y: number }> = {};
+    const primaryBox = getNodeBox(containerSize.width, containerSize.height, "primary");
+    const centerBox = getNodeBox(containerSize.width, containerSize.height, "center");
+    const subBox = getNodeBox(containerSize.width, containerSize.height, "sub");
+    const baseObstacles = [
+      { x: 50, y: 50, box: centerBox },
+      ...PRIMARIES.map((p) => ({ ...primaryPositions[p.id], box: primaryBox })),
+    ];
+    const safe = {
+      left: subBox.w / 2 + 1,
+      right: 100 - subBox.w / 2 - 1,
+      top: subBox.h / 2 + 2,
+      bottom: 100 - subBox.h / 2 - 2,
+    };
+
     PRIMARIES.forEach((p) => {
       const base = primaryPositions[p.id];
       const n = p.subs.length;
-      const baseAngle = base.angle;
+      const outwardX = ((base.x - 50) / 100) * containerSize.width;
+      const outwardY = ((base.y - 50) / 100) * containerSize.height;
+      const length = Math.hypot(outwardX, outwardY) || 1;
+      const ux = outwardX / length;
+      const uy = outwardY / length;
+      const tx = -uy;
+      const ty = ux;
+      const placed: { x: number; y: number; box: { w: number; h: number } }[] = [];
+
       p.subs.forEach((s, i) => {
-        const t = n === 1 ? 0 : i / (n - 1) - 0.5;
-        const a = baseAngle + t * radii.spread;
-        const { x, y } = polar(base.x, base.y, radii.subX, radii.subY, a);
-        map[s.id] = { x, y };
+        const t = i - (n - 1) / 2;
+        const direction = t === 0 ? 1 : Math.sign(t);
+        const outwardPx = radii.subOutward - Math.abs(t) * radii.subArc;
+        const tangentPx = t * radii.subTangent;
+        let node = {
+          x: clamp(base.x + ((ux * outwardPx + tx * tangentPx) / containerSize.width) * 100, safe.left, safe.right),
+          y: clamp(base.y + ((uy * outwardPx + ty * tangentPx) / containerSize.height) * 100, safe.top, safe.bottom),
+          box: subBox,
+        };
+
+        for (let attempt = 0; attempt < 7; attempt += 1) {
+          const collision = [...baseObstacles, ...placed].find((other) => boxesOverlap(node, other).touching);
+          if (!collision) break;
+          node = {
+            ...node,
+            x: clamp(node.x + ((ux * 16 + tx * 20 * direction) / containerSize.width) * 100, safe.left, safe.right),
+            y: clamp(node.y + ((uy * 16 + ty * 20 * direction) / containerSize.height) * 100, safe.top, safe.bottom),
+          };
+        }
+
+        placed.push(node);
+        map[s.id] = { x: node.x, y: node.y };
       });
     });
     return map;
-  }, [primaryPositions, radii]);
+  }, [containerSize, primaryPositions, radii]);
 
   const detailContent = useMemo(() => {
     if (!selected) return null;
