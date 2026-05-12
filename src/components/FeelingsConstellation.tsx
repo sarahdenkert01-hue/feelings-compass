@@ -146,19 +146,38 @@ const PRIMARIES: PrimaryNode[] = [
 
 const CENTER = { id: "center", label: "Something feels off" };
 
-// Polar layout for primary nodes around center
-const PRIMARY_RADIUS = 36; // % of container
-const SUB_RADIUS = 24; // around primary
-
 function polar(cx: number, cy: number, r: number, angleDeg: number) {
   const a = (angleDeg * Math.PI) / 180;
   return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+}
+
+// Responsive radii (% of container). Smaller screens push sub-nodes
+// further out and pull primaries slightly in to avoid overlap.
+function getRadii(width: number) {
+  if (width < 480) return { primary: 30, sub: 38, spread: 50 };
+  if (width < 768) return { primary: 32, sub: 34, spread: 55 };
+  if (width < 1100) return { primary: 34, sub: 28, spread: 62 };
+  return { primary: 36, sub: 24, spread: 70 };
 }
 
 export default function FeelingsConstellation() {
   const [activePrimary, setActivePrimary] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ kind: "center" | "primary" | "sub"; id: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(1200);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) setContainerWidth(e.contentRect.width);
+    });
+    ro.observe(el);
+    setContainerWidth(el.clientWidth);
+    return () => ro.disconnect();
+  }, []);
+
+  const radii = useMemo(() => getRadii(containerWidth), [containerWidth]);
 
   // Positions for primaries
   const primaryPositions = useMemo(() => {
@@ -166,29 +185,27 @@ export default function FeelingsConstellation() {
     const n = PRIMARIES.length;
     PRIMARIES.forEach((p, i) => {
       const angle = -90 + (360 / n) * i; // start at top
-      const { x, y } = polar(50, 50, PRIMARY_RADIUS, angle);
+      const { x, y } = polar(50, 50, radii.primary, angle);
       map[p.id] = { x, y, angle };
     });
     return map;
-  }, []);
+  }, [radii]);
 
   const subPositions = useMemo(() => {
     const map: Record<string, { x: number; y: number }> = {};
     PRIMARIES.forEach((p) => {
       const base = primaryPositions[p.id];
       const n = p.subs.length;
-      // fan outward from center direction
       const baseAngle = base.angle;
-      const spread = 70; // degrees
       p.subs.forEach((s, i) => {
         const t = n === 1 ? 0 : i / (n - 1) - 0.5;
-        const a = baseAngle + t * spread;
-        const { x, y } = polar(base.x, base.y, SUB_RADIUS, a);
+        const a = baseAngle + t * radii.spread;
+        const { x, y } = polar(base.x, base.y, radii.sub, a);
         map[s.id] = { x, y };
       });
     });
     return map;
-  }, [primaryPositions]);
+  }, [primaryPositions, radii]);
 
   const detailContent = useMemo(() => {
     if (!selected) return null;
