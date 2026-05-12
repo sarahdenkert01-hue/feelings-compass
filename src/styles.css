@@ -145,6 +145,7 @@
       radial-gradient(ellipse at 50% 50%, oklch(0.97 0.012 235), oklch(0.95 0.015 240));
     color: var(--color-foreground);
     min-height: 100vh;
+    font-family: "Comfortaa", system-ui, sans-serif;
     font-feature-settings: "ss01", "cv11";
   }
 }
@@ -155,7 +156,9 @@
     box-shadow:
       0 1px 0 oklch(1 0 0 / 0.7) inset,
       0 12px 40px -12px oklch(0.5 0.05 240 / 0.25),
-      0 0 0 1px oklch(0.85 0.02 235 / 0.5);
+      0 0 0 1px oklch(0.85 0.02 235 / 0.5),
+      0 0 40px oklch(0.85 0.05 220 / 0.45),
+      0 0 80px oklch(0.82 0.06 230 / 0.3);
   }
   .nd-node-center {
     background: linear-gradient(145deg, oklch(0.99 0.005 240), oklch(0.93 0.025 230));
@@ -163,7 +166,8 @@
       0 1px 0 oklch(1 0 0 / 0.9) inset,
       0 20px 60px -15px oklch(0.5 0.05 240 / 0.3),
       0 0 0 1px oklch(0.88 0.02 235 / 0.6),
-      0 0 80px oklch(0.85 0.04 220 / 0.4);
+      0 0 60px oklch(0.85 0.06 220 / 0.55),
+      0 0 120px oklch(0.82 0.07 225 / 0.4);
   }
   .nd-node-secondary {
     background: oklch(0.98 0.008 235 / 0.85);
@@ -171,13 +175,14 @@
     box-shadow:
       0 1px 0 oklch(1 0 0 / 0.6) inset,
       0 6px 20px -8px oklch(0.5 0.05 240 / 0.18),
-      0 0 0 1px oklch(0.88 0.018 235 / 0.5);
+      0 0 0 1px oklch(0.88 0.018 235 / 0.5),
+      0 0 24px oklch(0.86 0.04 225 / 0.35);
   }
   .nd-glow {
     box-shadow:
-      0 0 0 1px oklch(0.78 0.05 220 / 0.5),
-      0 0 30px oklch(0.78 0.06 220 / 0.35),
-      0 12px 40px -10px oklch(0.5 0.06 240 / 0.3);
+      0 0 0 1px oklch(0.78 0.05 220 / 0.6),
+      0 0 50px oklch(0.78 0.07 220 / 0.55),
+      0 12px 40px -10px oklch(0.5 0.06 240 / 0.35);
   }
   .nd-float {
     animation: nd-float 7s ease-in-out infinite;
@@ -185,20 +190,23 @@
   .nd-float-slow {
     animation: nd-float 11s ease-in-out infinite;
   }
+  .nd-pulse {
+    animation: nd-float 7s ease-in-out infinite, nd-pulse 4.5s ease-in-out infinite;
+  }
+  .nd-pulse-slow {
+    animation: nd-float 11s ease-in-out infinite, nd-pulse 5.5s ease-in-out infinite;
+  }
   .nd-fade-in {
     animation: nd-fade-in 0.7s ease-out both;
   }
   .nd-line {
     stroke: oklch(0.78 0.04 230);
-    stroke-width: 1.2;
+    stroke-width: 0.35;
+    vector-effect: non-scaling-stroke;
     stroke-linecap: round;
     fill: none;
     opacity: 0;
     animation: nd-line-in 0.9s ease-out forwards;
-  }
-  .nd-reduced * {
-    animation: none !important;
-    transition-duration: 0.01ms !important;
   }
 }
 
@@ -206,11 +214,19 @@
   0%, 100% { transform: translate(0, 0); }
   50% { transform: translate(0, -6px); }
 }
+@keyframes nd-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 12px oklch(0.82 0.06 225 / 0.45));
+  }
+  50% {
+    filter: drop-shadow(0 0 28px oklch(0.82 0.08 225 / 0.75));
+  }
+}
 @keyframes nd-fade-in {
   from { opacity: 0; transform: translateY(8px) scale(0.96); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 @keyframes nd-line-in {
-  to { opacity: 0.55; }
+  to { opacity: 0.45; }
 }
 
