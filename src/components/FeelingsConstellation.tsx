@@ -404,30 +404,6 @@ function NodeButton({
   );
 }
 
-function Toggle({ on, setOn, label }: { on: boolean; setOn: (v: boolean) => void; label: string }) {
-  return (
-    <button
-      onClick={() => setOn(!on)}
-      className="group flex items-center gap-2 rounded-full bg-card/70 backdrop-blur px-3 py-1.5 border border-border/60 hover:bg-card transition-colors"
-      aria-pressed={on}
-    >
-      <span
-        className={[
-          "h-3.5 w-6 rounded-full transition-colors relative",
-          on ? "bg-primary/60" : "bg-muted",
-        ].join(" ")}
-      >
-        <span
-          className={[
-            "absolute top-0.5 h-2.5 w-2.5 rounded-full bg-card transition-all",
-            on ? "left-3" : "left-0.5",
-          ].join(" ")}
-        />
-      </span>
-      <span className="text-foreground/70">{label}</span>
-    </button>
-  );
-}
 
 function DetailPanel({
   open,
