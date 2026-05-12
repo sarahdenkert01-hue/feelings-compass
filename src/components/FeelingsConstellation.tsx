@@ -390,7 +390,7 @@ function NodeButton({
         sizeClass,
         active ? "nd-glow scale-[1.03]" : "",
         dim ? "opacity-40" : "opacity-100",
-        floating ? (size === "center" ? "nd-float-slow" : "nd-float") : "nd-fade-in",
+        floating ? (size === "center" ? "nd-pulse-slow" : "nd-pulse") : "nd-fade-in",
         "hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
       ].join(" ")}
       style={{
