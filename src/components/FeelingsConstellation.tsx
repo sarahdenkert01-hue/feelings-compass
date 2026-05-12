@@ -147,8 +147,8 @@ const PRIMARIES: PrimaryNode[] = [
 const CENTER = { id: "center", label: "Something feels off" };
 
 // Polar layout for primary nodes around center
-const PRIMARY_RADIUS = 38; // % of container
-const SUB_RADIUS = 16; // around primary
+const PRIMARY_RADIUS = 36; // % of container
+const SUB_RADIUS = 24; // around primary
 
 function polar(cx: number, cy: number, r: number, angleDeg: number) {
   const a = (angleDeg * Math.PI) / 180;
@@ -158,8 +158,6 @@ function polar(cx: number, cy: number, r: number, angleDeg: number) {
 export default function FeelingsConstellation() {
   const [activePrimary, setActivePrimary] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ kind: "center" | "primary" | "sub"; id: string } | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [simpleMode, setSimpleMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Positions for primaries
@@ -221,30 +219,24 @@ export default function FeelingsConstellation() {
   };
 
   return (
-    <div className={`min-h-screen w-full ${reducedMotion ? "nd-reduced" : ""} ${simpleMode ? "text-[1.05rem]" : ""}`}>
+    <div className="min-h-screen w-full">
       {/* Header */}
-      <header className="px-6 pt-8 pb-2 max-w-5xl mx-auto">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">A gentle check-in</p>
-            <h1 className="mt-2 text-2xl sm:text-3xl font-medium text-foreground/90 leading-snug">
-              Neurodivergent Feelings Constellation
-            </h1>
-            <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
-              Take your time. Tap whatever feels closest — nothing here is a test.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Toggle on={reducedMotion} setOn={setReducedMotion} label="Reduced motion" />
-            <Toggle on={simpleMode} setOn={setSimpleMode} label="Simple mode" />
-          </div>
+      <header className="px-6 pt-8 pb-2 max-w-7xl mx-auto">
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">A gentle check-in</p>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-medium text-foreground/90 leading-snug">
+            Neurodivergent Feelings Constellation
+          </h1>
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
+            Take your time. Tap whatever feels closest — nothing here is a test.
+          </p>
         </div>
       </header>
 
       {/* Constellation */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-5xl aspect-[4/3] sm:aspect-[16/10] mt-2"
+        className="relative mx-auto w-full max-w-7xl aspect-[4/3] sm:aspect-[16/9] mt-2"
       >
         {/* SVG lines */}
         <svg
@@ -398,7 +390,7 @@ function NodeButton({
         sizeClass,
         active ? "nd-glow scale-[1.03]" : "",
         dim ? "opacity-40" : "opacity-100",
-        floating ? (size === "center" ? "nd-float-slow" : "nd-float") : "nd-fade-in",
+        floating ? (size === "center" ? "nd-pulse-slow" : "nd-pulse") : "nd-fade-in",
         "hover:scale-[1.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
       ].join(" ")}
       style={{
@@ -412,30 +404,6 @@ function NodeButton({
   );
 }
 
-function Toggle({ on, setOn, label }: { on: boolean; setOn: (v: boolean) => void; label: string }) {
-  return (
-    <button
-      onClick={() => setOn(!on)}
-      className="group flex items-center gap-2 rounded-full bg-card/70 backdrop-blur px-3 py-1.5 border border-border/60 hover:bg-card transition-colors"
-      aria-pressed={on}
-    >
-      <span
-        className={[
-          "h-3.5 w-6 rounded-full transition-colors relative",
-          on ? "bg-primary/60" : "bg-muted",
-        ].join(" ")}
-      >
-        <span
-          className={[
-            "absolute top-0.5 h-2.5 w-2.5 rounded-full bg-card transition-all",
-            on ? "left-3" : "left-0.5",
-          ].join(" ")}
-        />
-      </span>
-      <span className="text-foreground/70">{label}</span>
-    </button>
-  );
-}
 
 function DetailPanel({
   open,
