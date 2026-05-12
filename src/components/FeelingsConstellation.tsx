@@ -147,8 +147,8 @@ const PRIMARIES: PrimaryNode[] = [
 const CENTER = { id: "center", label: "Something feels off" };
 
 // Polar layout for primary nodes around center
-const PRIMARY_RADIUS = 38; // % of container
-const SUB_RADIUS = 16; // around primary
+const PRIMARY_RADIUS = 36; // % of container
+const SUB_RADIUS = 24; // around primary
 
 function polar(cx: number, cy: number, r: number, angleDeg: number) {
   const a = (angleDeg * Math.PI) / 180;
@@ -158,8 +158,6 @@ function polar(cx: number, cy: number, r: number, angleDeg: number) {
 export default function FeelingsConstellation() {
   const [activePrimary, setActivePrimary] = useState<string | null>(null);
   const [selected, setSelected] = useState<{ kind: "center" | "primary" | "sub"; id: string } | null>(null);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [simpleMode, setSimpleMode] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Positions for primaries
