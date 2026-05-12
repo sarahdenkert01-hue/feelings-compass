@@ -197,7 +197,7 @@ export default function FeelingsConstellation() {
     const n = PRIMARIES.length;
     PRIMARIES.forEach((p, i) => {
       const angle = -90 + (360 / n) * i; // start at top
-      const { x, y } = polar(50, 50, radii.primary, angle);
+      const { x, y } = polar(50, 50, radii.primaryX, radii.primaryY, angle);
       map[p.id] = { x, y, angle };
     });
     return map;
