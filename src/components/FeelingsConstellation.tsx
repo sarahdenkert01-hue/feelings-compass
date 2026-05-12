@@ -219,30 +219,24 @@ export default function FeelingsConstellation() {
   };
 
   return (
-    <div className={`min-h-screen w-full ${reducedMotion ? "nd-reduced" : ""} ${simpleMode ? "text-[1.05rem]" : ""}`}>
+    <div className="min-h-screen w-full">
       {/* Header */}
-      <header className="px-6 pt-8 pb-2 max-w-5xl mx-auto">
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">A gentle check-in</p>
-            <h1 className="mt-2 text-2xl sm:text-3xl font-medium text-foreground/90 leading-snug">
-              Neurodivergent Feelings Constellation
-            </h1>
-            <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
-              Take your time. Tap whatever feels closest — nothing here is a test.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <Toggle on={reducedMotion} setOn={setReducedMotion} label="Reduced motion" />
-            <Toggle on={simpleMode} setOn={setSimpleMode} label="Simple mode" />
-          </div>
+      <header className="px-6 pt-8 pb-2 max-w-7xl mx-auto">
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">A gentle check-in</p>
+          <h1 className="mt-2 text-2xl sm:text-3xl font-medium text-foreground/90 leading-snug">
+            Neurodivergent Feelings Constellation
+          </h1>
+          <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
+            Take your time. Tap whatever feels closest — nothing here is a test.
+          </p>
         </div>
       </header>
 
       {/* Constellation */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-5xl aspect-[4/3] sm:aspect-[16/10] mt-2"
+        className="relative mx-auto w-full max-w-7xl aspect-[4/3] sm:aspect-[16/9] mt-2"
       >
         {/* SVG lines */}
         <svg
