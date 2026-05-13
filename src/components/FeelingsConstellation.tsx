@@ -344,12 +344,9 @@ export default function FeelingsConstellation() {
       <header className="px-6 pt-8 pb-2 max-w-7xl mx-auto">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">A gentle check-in</p>
-          <h1 className="mt-2 text-2xl sm:text-3xl font-medium text-foreground/90 leading-snug">
-            Neurodivergent Feelings Constellation
+          <h1 className="mt-2 text-xl sm:text-2xl font-medium text-foreground/90 leading-snug max-w-2xl">
+            It's okay if you don't know what you're feeling. Tap whichever feels closest. You can change your mind at any time.
           </h1>
-          <p className="mt-2 text-sm sm:text-base text-muted-foreground max-w-xl leading-relaxed">
-            Take your time. Tap whatever feels closest — nothing here is a test.
-          </p>
         </div>
       </header>
 
