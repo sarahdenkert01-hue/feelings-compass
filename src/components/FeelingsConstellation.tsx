@@ -164,9 +164,9 @@ function polar(
 // or overlap the page title above the constellation.
 function getRadii(width: number) {
   if (width < 480)
-    return { primaryX: 27, primaryY: 22, subOutward: 142, subTangent: 78, subArc: 34 };
+    return { primaryX: 32, primaryY: 34, subOutward: 96, subTangent: 70, subArc: 18 };
   if (width < 768)
-    return { primaryX: 29, primaryY: 23, subOutward: 148, subTangent: 108, subArc: 26 };
+    return { primaryX: 32, primaryY: 30, subOutward: 130, subTangent: 96, subArc: 22 };
   if (width < 1100)
     return { primaryX: 32, primaryY: 25, subOutward: 148, subTangent: 136, subArc: 14 };
   return { primaryX: 36, primaryY: 28, subOutward: 150, subTangent: 148, subArc: 10 };
