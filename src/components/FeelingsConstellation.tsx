@@ -331,7 +331,7 @@ export default function FeelingsConstellation() {
       {/* Constellation */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-7xl aspect-[4/3] sm:aspect-[16/9] mt-2"
+        className="relative mx-auto w-full max-w-7xl aspect-[3/4] xs:aspect-[4/5] sm:aspect-[16/9] mt-2"
       >
         {/* SVG lines */}
         <svg
