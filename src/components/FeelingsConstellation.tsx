@@ -178,7 +178,9 @@ function clamp(value: number, min: number, max: number) {
 
 function getNodeBox(width: number, height: number, kind: "center" | "primary" | "sub") {
   const sizes =
-    width < 640
+    width < 480
+      ? { center: [150, 64], primary: [108, 44], sub: [88, 30] }
+      : width < 640
       ? { center: [200, 78], primary: [146, 56], sub: [112, 36] }
       : { center: [230, 82], primary: [170, 60], sub: [126, 38] };
   const [w, h] = sizes[kind];
