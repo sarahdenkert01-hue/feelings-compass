@@ -333,30 +333,43 @@ export default function FeelingsConstellation() {
         ref={containerRef}
         className="relative mx-auto w-full max-w-7xl aspect-[3/4] xs:aspect-[4/5] sm:aspect-[16/9] mt-2"
       >
+        {/* Back button (focused mode) */}
+        {activePrimary && (
+          <button
+            onClick={() => {
+              setActivePrimary(null);
+              setSelected(null);
+            }}
+            className="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 inline-flex items-center gap-2 rounded-full bg-card/80 backdrop-blur-md border border-border/60 px-3.5 py-1.5 text-xs sm:text-sm text-foreground/75 hover:text-foreground hover:bg-card transition-all shadow-sm nd-fade-in"
+            aria-label="Back to constellation"
+          >
+            <span aria-hidden>←</span>
+            <span>Back</span>
+          </button>
+        )}
+
         {/* SVG lines */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none"
           viewBox="0 0 100 100"
           preserveAspectRatio="none"
         >
-          {/* Lines from center to each primary */}
-          {PRIMARIES.map((p) => {
-            const pos = primaryPositions[p.id];
-            return (
-              <line
-                key={`c-${p.id}`}
-                className="nd-line"
-                x1={50}
-                y1={50}
-                x2={pos.x}
-                y2={pos.y}
-                style={{
-                  opacity: activePrimary && activePrimary !== p.id ? 0.2 : undefined,
-                  animationDelay: `${0.1}s`,
-                }}
-              />
-            );
-          })}
+          {/* Lines from center to each primary (only when not focused) */}
+          {!activePrimary &&
+            PRIMARIES.map((p) => {
+              const pos = primaryPositions[p.id];
+              return (
+                <line
+                  key={`c-${p.id}`}
+                  className="nd-line"
+                  x1={50}
+                  y1={50}
+                  x2={pos.x}
+                  y2={pos.y}
+                  style={{ animationDelay: `${0.1}s` }}
+                />
+              );
+            })}
           {/* Lines from active primary to its subs */}
           {activePrimary &&
             PRIMARIES.find((p) => p.id === activePrimary)!.subs.map((s, i) => {
@@ -376,25 +389,27 @@ export default function FeelingsConstellation() {
             })}
         </svg>
 
-        {/* Center node */}
-        <NodeButton
-          x={50}
-          y={50}
-          size="center"
-          floating
-          onClick={() => setSelected({ kind: "center", id: "center" })}
-          active={selected?.kind === "center"}
-        >
-          <span className="block text-[9px] sm:text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Begin here</span>
-          <span className="mt-1 block text-sm sm:text-lg font-medium text-foreground/85">
-            {CENTER.label}
-          </span>
-        </NodeButton>
+        {/* Center node (only when not focused) */}
+        {!activePrimary && (
+          <NodeButton
+            x={50}
+            y={50}
+            size="center"
+            floating
+            onClick={() => setSelected({ kind: "center", id: "center" })}
+            active={selected?.kind === "center"}
+          >
+            <span className="block text-[9px] sm:text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Begin here</span>
+            <span className="mt-1 block text-sm sm:text-lg font-medium text-foreground/85">
+              {CENTER.label}
+            </span>
+          </NodeButton>
+        )}
 
-        {/* Primary nodes */}
+        {/* Primary nodes — hide non-active ones in focused mode */}
         {PRIMARIES.map((p, i) => {
+          if (activePrimary && activePrimary !== p.id) return null;
           const pos = primaryPositions[p.id];
-          const dim = activePrimary && activePrimary !== p.id;
           return (
             <NodeButton
               key={p.id}
@@ -405,7 +420,6 @@ export default function FeelingsConstellation() {
               floatDelay={i * 0.6}
               onClick={() => handlePrimaryClick(p.id)}
               active={activePrimary === p.id}
-              dim={!!dim}
             >
               <span className="text-[13px] sm:text-base font-medium text-foreground/85">{p.label}</span>
             </NodeButton>
