@@ -385,8 +385,8 @@ export default function FeelingsConstellation() {
           onClick={() => setSelected({ kind: "center", id: "center" })}
           active={selected?.kind === "center"}
         >
-          <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Begin here</span>
-          <span className="mt-1 block text-base sm:text-lg font-medium text-foreground/85">
+          <span className="block text-[9px] sm:text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Begin here</span>
+          <span className="mt-1 block text-sm sm:text-lg font-medium text-foreground/85">
             {CENTER.label}
           </span>
         </NodeButton>
