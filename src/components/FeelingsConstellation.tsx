@@ -431,25 +431,59 @@ export default function FeelingsConstellation() {
           </NodeButton>
         )}
 
-        {/* Primary nodes — hide non-active ones in focused mode */}
+        {/* Primary nodes — hide non-active ones in focused mode; center the active one */}
         {PRIMARIES.map((p, i) => {
           if (activePrimary && activePrimary !== p.id) return null;
-          const pos = primaryPositions[p.id];
+          const isFocused = activePrimary === p.id;
+          const pos = isFocused ? { x: 50, y: 50 } : primaryPositions[p.id];
           return (
             <NodeButton
               key={p.id}
               x={pos.x}
               y={pos.y}
-              size="primary"
+              size={isFocused ? "center" : "primary"}
               floating
               floatDelay={i * 0.6}
               onClick={() => handlePrimaryClick(p.id)}
-              active={activePrimary === p.id}
+              active={isFocused}
             >
-              <span className="text-[13px] sm:text-base font-medium text-foreground/85">{p.label}</span>
+              {isFocused && (
+                <span className="block text-[9px] sm:text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
+                  Focused on
+                </span>
+              )}
+              <span
+                className={
+                  isFocused
+                    ? "mt-1 block text-base sm:text-xl font-medium text-foreground/85"
+                    : "text-[13px] sm:text-base font-medium text-foreground/85"
+                }
+              >
+                {p.label}
+              </span>
             </NodeButton>
           );
         })}
+
+        {/* Sub nodes */}
+        {activePrimary &&
+          PRIMARIES.find((p) => p.id === activePrimary)!.subs.map((s, i) => {
+            const pos = focusedSubPositions[s.id];
+            if (!pos) return null;
+            return (
+              <NodeButton
+                key={s.id}
+                x={pos.x}
+                y={pos.y}
+                size="sub"
+                onClick={() => setSelected({ kind: "sub", id: s.id })}
+                active={selected?.id === s.id}
+                delay={i * 0.08}
+              >
+                <span className="text-[11px] sm:text-sm text-foreground/75">{s.label}</span>
+              </NodeButton>
+            );
+          })}
 
         {/* Sub nodes */}
         {activePrimary &&
