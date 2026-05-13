@@ -485,25 +485,6 @@ export default function FeelingsConstellation() {
               </NodeButton>
             );
           })}
-
-        {/* Sub nodes */}
-        {activePrimary &&
-          PRIMARIES.find((p) => p.id === activePrimary)!.subs.map((s, i) => {
-            const pos = subPositions[s.id];
-            return (
-              <NodeButton
-                key={s.id}
-                x={pos.x}
-                y={pos.y}
-                size="sub"
-                onClick={() => setSelected({ kind: "sub", id: s.id })}
-                active={selected?.id === s.id}
-                delay={i * 0.08}
-              >
-                <span className="text-[11px] sm:text-sm text-foreground/75">{s.label}</span>
-              </NodeButton>
-            );
-          })}
       </div>
 
       {/* Detail panel */}
