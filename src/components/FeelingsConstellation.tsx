@@ -426,7 +426,7 @@ export default function FeelingsConstellation() {
                 active={selected?.id === s.id}
                 delay={i * 0.08}
               >
-                <span className="text-xs sm:text-sm text-foreground/75">{s.label}</span>
+                <span className="text-[11px] sm:text-sm text-foreground/75">{s.label}</span>
               </NodeButton>
             );
           })}
