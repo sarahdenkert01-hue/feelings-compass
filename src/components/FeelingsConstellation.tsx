@@ -164,9 +164,9 @@ function polar(
 // or overlap the page title above the constellation.
 function getRadii(width: number) {
   if (width < 480)
-    return { primaryX: 27, primaryY: 22, subOutward: 142, subTangent: 78, subArc: 34 };
+    return { primaryX: 32, primaryY: 34, subOutward: 96, subTangent: 70, subArc: 18 };
   if (width < 768)
-    return { primaryX: 29, primaryY: 23, subOutward: 148, subTangent: 108, subArc: 26 };
+    return { primaryX: 32, primaryY: 30, subOutward: 130, subTangent: 96, subArc: 22 };
   if (width < 1100)
     return { primaryX: 32, primaryY: 25, subOutward: 148, subTangent: 136, subArc: 14 };
   return { primaryX: 36, primaryY: 28, subOutward: 150, subTangent: 148, subArc: 10 };
@@ -178,7 +178,9 @@ function clamp(value: number, min: number, max: number) {
 
 function getNodeBox(width: number, height: number, kind: "center" | "primary" | "sub") {
   const sizes =
-    width < 640
+    width < 480
+      ? { center: [150, 64], primary: [108, 44], sub: [88, 30] }
+      : width < 640
       ? { center: [200, 78], primary: [146, 56], sub: [112, 36] }
       : { center: [230, 82], primary: [170, 60], sub: [126, 38] };
   const [w, h] = sizes[kind];
@@ -329,7 +331,7 @@ export default function FeelingsConstellation() {
       {/* Constellation */}
       <div
         ref={containerRef}
-        className="relative mx-auto w-full max-w-7xl aspect-[4/3] sm:aspect-[16/9] mt-2"
+        className="relative mx-auto w-full max-w-7xl aspect-[3/4] xs:aspect-[4/5] sm:aspect-[16/9] mt-2"
       >
         {/* SVG lines */}
         <svg
@@ -383,8 +385,8 @@ export default function FeelingsConstellation() {
           onClick={() => setSelected({ kind: "center", id: "center" })}
           active={selected?.kind === "center"}
         >
-          <span className="block text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Begin here</span>
-          <span className="mt-1 block text-base sm:text-lg font-medium text-foreground/85">
+          <span className="block text-[9px] sm:text-[11px] uppercase tracking-[0.18em] text-muted-foreground">Begin here</span>
+          <span className="mt-1 block text-sm sm:text-lg font-medium text-foreground/85">
             {CENTER.label}
           </span>
         </NodeButton>
@@ -405,7 +407,7 @@ export default function FeelingsConstellation() {
               active={activePrimary === p.id}
               dim={!!dim}
             >
-              <span className="text-sm sm:text-base font-medium text-foreground/85">{p.label}</span>
+              <span className="text-[13px] sm:text-base font-medium text-foreground/85">{p.label}</span>
             </NodeButton>
           );
         })}
@@ -424,7 +426,7 @@ export default function FeelingsConstellation() {
                 active={selected?.id === s.id}
                 delay={i * 0.08}
               >
-                <span className="text-xs sm:text-sm text-foreground/75">{s.label}</span>
+                <span className="text-[11px] sm:text-sm text-foreground/75">{s.label}</span>
               </NodeButton>
             );
           })}
@@ -469,10 +471,10 @@ function NodeButton({
 }) {
   const sizeClass =
     size === "center"
-      ? "nd-node-center px-7 py-5 sm:px-9 sm:py-6 min-w-[180px] sm:min-w-[220px]"
+      ? "nd-node-center px-5 py-3.5 sm:px-9 sm:py-6 min-w-[140px] sm:min-w-[220px]"
       : size === "primary"
-      ? "nd-node-primary px-5 py-4 sm:px-6 sm:py-4 min-w-[140px] sm:min-w-[160px]"
-      : "nd-node-secondary px-3.5 py-2 min-w-[96px]";
+      ? "nd-node-primary px-3.5 py-2.5 sm:px-6 sm:py-4 min-w-[104px] sm:min-w-[160px]"
+      : "nd-node-secondary px-3 py-1.5 sm:px-3.5 sm:py-2 min-w-[84px] sm:min-w-[96px]";
 
   return (
     <div
