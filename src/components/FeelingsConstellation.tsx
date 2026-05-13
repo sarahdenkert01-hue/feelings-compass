@@ -316,8 +316,8 @@ export default function FeelingsConstellation() {
       return {
         label: CENTER.label,
         blurb:
-          "Welcome. There’s no rush to name it perfectly. Pick whichever node feels closest, and you can change your mind anytime.",
-        body: ["Notice your breath. Just notice — no need to change it."],
+          "Hey there. It's okay if you don't know what you're feeling. Pick whichever feels closest, and you can change your mind anytime.",
+        body: ["Notice your breath. Just notice, no need to change it."],
         thoughts: ["“I’m allowed to take a moment to check in.”"],
         needs: ["Curiosity, not judgment", "A slow exhale"],
       };
