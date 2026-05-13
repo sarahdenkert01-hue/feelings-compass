@@ -471,10 +471,10 @@ function NodeButton({
 }) {
   const sizeClass =
     size === "center"
-      ? "nd-node-center px-7 py-5 sm:px-9 sm:py-6 min-w-[180px] sm:min-w-[220px]"
+      ? "nd-node-center px-5 py-3.5 sm:px-9 sm:py-6 min-w-[140px] sm:min-w-[220px]"
       : size === "primary"
-      ? "nd-node-primary px-5 py-4 sm:px-6 sm:py-4 min-w-[140px] sm:min-w-[160px]"
-      : "nd-node-secondary px-3.5 py-2 min-w-[96px]";
+      ? "nd-node-primary px-3.5 py-2.5 sm:px-6 sm:py-4 min-w-[104px] sm:min-w-[160px]"
+      : "nd-node-secondary px-3 py-1.5 sm:px-3.5 sm:py-2 min-w-[84px] sm:min-w-[96px]";
 
   return (
     <div
