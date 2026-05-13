@@ -407,7 +407,7 @@ export default function FeelingsConstellation() {
               active={activePrimary === p.id}
               dim={!!dim}
             >
-              <span className="text-sm sm:text-base font-medium text-foreground/85">{p.label}</span>
+              <span className="text-[13px] sm:text-base font-medium text-foreground/85">{p.label}</span>
             </NodeButton>
           );
         })}
