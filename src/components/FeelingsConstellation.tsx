@@ -229,6 +229,31 @@ export default function FeelingsConstellation() {
     return map;
   }, [radii]);
 
+  // When a primary is focused, lay its subs out in a full circle around the
+  // centered primary so nothing overlaps and the focus feels symmetrical.
+  const focusedSubPositions = useMemo(() => {
+    const map: Record<string, { x: number; y: number }> = {};
+    if (!activePrimary) return map;
+    const w = containerSize.width;
+    const ring =
+      w < 480
+        ? { rx: 34, ry: 30 }
+        : w < 768
+        ? { rx: 36, ry: 32 }
+        : w < 1100
+        ? { rx: 32, ry: 30 }
+        : { rx: 30, ry: 32 };
+    const primary = PRIMARIES.find((p) => p.id === activePrimary);
+    if (!primary) return map;
+    const n = primary.subs.length;
+    primary.subs.forEach((s, i) => {
+      const angle = -90 + (360 / n) * i;
+      const { x, y } = polar(50, 50, ring.rx, ring.ry, angle);
+      map[s.id] = { x, y };
+    });
+    return map;
+  }, [activePrimary, containerSize.width]);
+
   const subPositions = useMemo(() => {
     const map: Record<string, { x: number; y: number }> = {};
     const primaryBox = getNodeBox(containerSize.width, containerSize.height, "primary");
