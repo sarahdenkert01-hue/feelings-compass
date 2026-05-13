@@ -398,8 +398,9 @@ export default function FeelingsConstellation() {
           {/* Lines from active primary to its subs */}
           {activePrimary &&
             PRIMARIES.find((p) => p.id === activePrimary)!.subs.map((s, i) => {
-              const from = primaryPositions[activePrimary];
-              const to = subPositions[s.id];
+              const from = { x: 50, y: 50 };
+              const to = focusedSubPositions[s.id];
+              if (!to) return null;
               return (
                 <line
                   key={`s-${s.id}`}
